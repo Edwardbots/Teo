@@ -1,5 +1,7 @@
 import fetch from 'node-fetch';
 
+const thumbnailUrl = 'https://cdn.russellxz.click/b317cef7.jpg'
+
 const handler = async (m, { conn, text, command, usedPrefix }) => {
   if (!text) {
     await conn.sendMessage(m.chat, { react: { text: '🎧', key: m.key } })
@@ -60,9 +62,8 @@ const handler = async (m, { conn, text, command, usedPrefix }) => {
 
 > 🎅 *¡Itsuki Nakano V3 encontró tu contenido!* 🎄`;
 
-    const thumb = await (await fetch(imageUrl)).arrayBuffer();
     await conn.sendMessage(m.chat, { 
-      image: Buffer.from(thumb), 
+      image: { url: thumbnailUrl }, 
       caption: info 
     }, { quoted: m });
 
