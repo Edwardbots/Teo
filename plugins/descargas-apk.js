@@ -1,71 +1,41 @@
 import fetch from 'node-fetch'
 
-/**
-
-🎀 CREADO POR: LeoXzzsy
-🌸 ADAPTADO PARA: Itsuki-Nakano IA
-📚 VERSIÓN: 3.4.0 Beta
-🏷️ SISTEMA DE DESCARGAS APK PREMIUM
-*/
-
 let handler = async (m, { conn, usedPrefix, command, args }) => {
-const ctxErr = (global.rcanalx || {})
-const ctxWarn = (global.rcanalw || {})
-const ctxOk = (global.rcanalr || {})
-
-// Verificar si el usuario es premium
-let user = global.db.data.users[m.sender];
-if (!user.premium || user.premiumTime < Date.now()) {
-return conn.reply(m.chat,
-`╭━━━〔 🎀 𝐀𝐂𝐂𝐄𝐒𝐎 𝐃𝐄𝐍𝐄𝐆𝐀𝐃𝐎 🎀 〕━━━⬣
-│ ❌ *Comando Exclusivo Premium*
-│ 
-│ 💎 Descargas de APK
-│ solo para miembros premium
-╰━━━━━━━━━━━━━━━━━━━━━━⬣
-
-🌟 *Obtén tu membresía:*
-│ ${usedPrefix}premium dia
-│ ${usedPrefix}premium semana  
-│ ${usedPrefix}premium mes
-
-🌸 *¡Únete al club exclusivo de Itsuki!* (◕‿◕✿)`, 
-m, ctxErr);
-}
-
 try {
 if (!args[0]) {
 return conn.reply(m.chat,
-`╭━━━〔 🎀 𝐃𝐄𝐒𝐂𝐀𝐑𝐆𝐀𝐃𝐎𝐑 𝐀𝐏𝐊 𝐏𝐑𝐄𝐌𝐈𝐔𝐌 🎀 〕━━━⬣
-│ 📌 *Uso correcto:*
-│ ${usedPrefix + command} <nombre_de_la_app>
-│ 
-│ 🎯 *Ejemplos populares:*
-│ ${usedPrefix + command} whatsapp
-│ ${usedPrefix + command} tiktok
-│ ${usedPrefix + command} facebook
-│ ${usedPrefix + command} instagram
-│ ${usedPrefix + command} spotify
-╰━━━━━━━━━━━━━━━━━━━━━━⬣
+`> 🎄 *¡NAVIDAD EN APK!* 🎅
 
-🌸 *Itsuki descargará la aplicación para ti...* (◕‿◕✿)`,
-m, ctxWarn)
+> 🎁 *DESCARGADOR APK NAVIDEÑO*
+
+> ❌ *Uso incorrecto*
+
+\`\`\`Debes proporcionar el nombre de la aplicación\`\`\`
+
+> *Ejemplos navideños:*
+> • ${usedPrefix + command} whatsapp
+> • ${usedPrefix + command} tiktok
+> • ${usedPrefix + command} facebook
+> • ${usedPrefix + command} instagram
+> • ${usedPrefix + command} spotify
+
+> 🎄 *¡Itsuki Nakano V3 - Tu asistente navideño!* 🎅`, m)
 }
 
 const appName = args.join(' ').toLowerCase()    
 
-// Mensaje de búsqueda - NO se borra    
+// Mensaje de búsqueda
 await conn.reply(m.chat,    
-`╭━━━〔 🎀 𝐁𝐔𝐒𝐂𝐀𝐍𝐃𝐎 𝐀𝐏𝐏 🎀 〕━━━⬣
-│ 🔍 *Buscando aplicación premium...*
-│ 
-│ 📱 *Nombre:* ${appName}
-│ ⚡ *Estado:* Consultando repositorios
-│ 💎 *Tipo:* Descarga Premium
-╰━━━━━━━━━━━━━━━━━━━━━━⬣
+`> 🎄 *¡BUSCANDO APLICACIÓN!* 🎅
 
-🌸 *Itsuki está trabajando en ello...* 📱`,    
-m, ctxWarn    
+> 🔍 *Buscando aplicación navideña...*
+
+> 📱 *Nombre:* ${appName}
+> ⚡ *Estado:* Consultando repositorios
+> 💎 *Tipo:* Descarga Navideña
+
+> 🎅 *Itsuki V3 está trabajando en ello...* 📱`,    
+m    
 )    
 
 // ✅ API CORREGIDA
@@ -79,7 +49,7 @@ throw new Error(`Error en la API: ${response.status}`)
 }    
 
 const data = await response.json()    
-console.log('📦 Respuesta de API APK:', data)    
+console.log('🎁 Respuesta de API APK:', data)    
 
 if (!data.status || !data.result) {    
 throw new Error('No se encontró la aplicación solicitada')    
@@ -88,49 +58,81 @@ throw new Error('No se encontró la aplicación solicitada')
 const appData = data.result    
 const downloadUrl = appData.url    
 const appTitle = appData.title || appName    
-const appVersion = 'Última versión'    
-const appSize = 'Tamaño no especificado'    
-const appDeveloper = 'Desarrollador no especificado'    
+const appVersion = appData.version || 'Última versión navideña'    
+const appSize = appData.size || 'Tamaño festivo'    
+const appDeveloper = appData.developer || 'Santa Claus Workshop'    
+
+// Intentar obtener imagen del APK
+let appImage = null
+try {
+// Buscar imagen en los datos de la API
+if (appData.icon) {
+appImage = appData.icon
+} else if (appData.image) {
+appImage = appData.image
+} else if (appData.screenshot) {
+appImage = appData.screenshot[0]
+}
+} catch (imgError) {
+console.log('❌ No se pudo obtener imagen del APK')
+}
 
 if (!downloadUrl) {    
 throw new Error('No se encontró enlace de descarga')    
 }    
 
-// Mensaje de aplicación encontrada - NO se borra    
-await conn.reply(m.chat,    
-`╭━━━〔 🎀 𝐀𝐏𝐏 𝐄𝐍𝐂𝐎𝐍𝐓𝐑𝐀𝐃𝐀 🎀 〕━━━⬣
-│ ✅ *¡Aplicación encontrada!*
-│ 
-│ 📱 *Nombre:* ${appTitle}
-│ 🔄 *Versión:* ${appVersion}
-│ 💾 *Tamaño:* ${appSize}
-│ 👨‍💻 *Desarrollador:* ${appDeveloper}
-│ 💎 *Estado:* Preparando descarga
-╰━━━━━━━━━━━━━━━━━━━━━━⬣
+// Mensaje de aplicación encontrada con imagen si está disponible
+if (appImage) {
+await conn.sendMessage(m.chat, {
+image: { url: appImage },
+caption: `> 🎄 *¡APP ENCONTRADA!* 🎅
 
-🌸 *Itsuki está preparando tu APK...* ⬇️`,    
-m, ctxOk    
+> ✅ *Aplicación encontrada*
+
+> 📱 *Nombre:* ${appTitle}
+> 🔄 *Versión:* ${appVersion}
+> 💾 *Tamaño:* ${appSize}
+> 👨‍💻 *Desarrollador:* ${appDeveloper}
+> 💎 *Estado:* Preparando descarga
+
+> 🎅 *Itsuki V3 prepara tu APK...* ⬇️`
+}, { quoted: m })
+} else {
+await conn.reply(m.chat,    
+`> 🎄 *¡APP ENCONTRADA!* 🎅
+
+> ✅ *Aplicación encontrada*
+
+> 📱 *Nombre:* ${appTitle}
+> 🔄 *Versión:* ${appVersion}
+> 💾 *Tamaño:* ${appSize}
+> 👨‍💻 *Desarrollador:* ${appDeveloper}
+> 💎 *Estado:* Preparando descarga
+
+> 🎅 *Itsuki V3 prepara tu APK...* ⬇️`,    
+m    
 )    
+}
 
 // Enviar el archivo APK    
 await conn.sendMessage(m.chat, {    
 document: { url: downloadUrl },    
 mimetype: 'application/vnd.android.package-archive',    
-fileName: `${appTitle.replace(/\s+/g, '_')}_v${appVersion}.apk`,    
+fileName: `${appTitle.replace(/\s+/g, '_')}_navidad.apk`,    
 caption: 
-`╭━━━〔 🎀 𝐀𝐏𝐊 𝐃𝐄𝐒𝐂𝐀𝐑𝐆𝐀𝐃𝐎 🎀 〕━━━⬣
-│ ✅ *¡Descarga completada!*
-│ 
-│ 📱 *Aplicación:* ${appTitle}
-│ ⭐ *Versión:* ${appVersion}
-│ 💾 *Tamaño:* ${appSize}
-│ 👨‍💻 *Desarrollador:* ${appDeveloper}
-│ 💎 *Tipo:* Descarga Premium
-╰━━━━━━━━━━━━━━━━━━━━━━⬣
+`> 🎄 *¡APK DESCARGADO!* 🎅
 
-⚠️ *Instala bajo tu propia responsabilidad*
-🌸 *¡Disfruta tu aplicación premium!* (◕‿◕✿)
-🎀 *Beneficio exclusivo para miembros premium* 💫`    
+> ✅ *Descarga completada*
+
+> 📱 *Aplicación:* ${appTitle}
+> ⭐ *Versión:* ${appVersion}
+> 💾 *Tamaño:* ${appSize}
+> 👨‍💻 *Desarrollador:* ${appDeveloper}
+> 💎 *Tipo:* Descarga Navideña
+
+> ⚠️ *Instala bajo tu propia responsabilidad*
+> 🎅 *¡Disfruta tu aplicación navideña!*
+> 🎄 *¡Feliz Navidad con Itsuki Nakano V3!*`    
 }, { quoted: m })    
 
 await m.react('✅')
@@ -139,21 +141,21 @@ await m.react('✅')
 console.error('❌ Error en descarga APK:', error)
 
 await conn.reply(m.chat,    
-`╭━━━〔 🎀 𝐄𝐑𝐑𝐎𝐑 𝐃𝐄 𝐃𝐄𝐒𝐂𝐀𝐑𝐆𝐀 🎀 〕━━━⬣
-│ ❌ *Error en la descarga*
-│ 
-│ 📝 *Detalles:* ${error.message}
-│ 
-│ 🔍 *Posibles causas:*
-│ • Nombre de aplicación incorrecto
-│ • Aplicación no disponible
-│ • Error del servidor
-│ • Intenta con otro nombre
-╰━━━━━━━━━━━━━━━━━━━━━━⬣
+`> 🎄 *¡ERROR DE DESCARGA!* 🎅
 
-🌸 *Itsuki lo intentará de nuevo...* (´；ω；\`)
-🎀 *Por favor, intenta con otro nombre*`,    
-m, ctxErr    
+> ❌ *Error en la descarga*
+
+> 📝 *Detalles:* ${error.message}
+
+> 🔍 *Posibles causas:*
+> • Nombre de aplicación incorrecto
+> • Aplicación no disponible
+> • Error del servidor
+> • Intenta con otro nombre
+
+> 🎅 *Itsuki lo intentará de nuevo...*
+> 🎄 *Por favor, intenta con otro nombre*`,    
+m    
 )    
 
 await m.react('❌')
@@ -164,6 +166,6 @@ await m.react('❌')
 handler.help = ['apk']
 handler.tags = ['downloader']
 handler.command = ['apk', 'apkdl', 'descargarapk']
-handler.register = true
+handler.register = false
 
 export default handler
