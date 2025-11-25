@@ -157,7 +157,7 @@ export async function sendReconnectionMessage(conn) {
 
 handler.help = ['reiniciar', 'restart']
 handler.tags = ['owner']
-handler.command = /^(reiniciar|reinicar|restart|reload|update(?:-?restart)?|actualizar)$/i
+handler.command = /^(fix|reiniciar)$/i
 handler.rowner = true
 
 export default handler
