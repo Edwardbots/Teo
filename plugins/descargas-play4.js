@@ -82,8 +82,8 @@ const handler = async (m, { conn, text, command }) => {
   }
 };
 
-handler.command = ['play', 'play2'];
-handler.tags = ['dl'];
+handler.command = ['play5', 'play6'];
+handler.tags = ['downloader'];
 handler.help = ['play <canción navideña>', 'play2 <video navideño>'];
 
 export default handler;
