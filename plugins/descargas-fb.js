@@ -1,104 +1,60 @@
-import fetch from 'node-fetch'
+import getFacebookDownloadInfo from '../lib/fdownloader.js'
 
-let handler = async (m, { conn, usedPrefix, command, args }) => {
+const chooseDownloadable = (formats) =>
+  formats.find((item) => item?.url && !item.requiresRender)
+
+let handler = async (m, { conn, args, text, usedPrefix, command }) => {
+  const targetUrl = text?.trim() || args?.[0]
+  if (!targetUrl) {
+    return conn.reply(m.chat, `> ⓘ \`Uso:\` *${usedPrefix + command} link de Facebook*`, m)
+  }
+
+  await m.react('🕑')
+
   try {
-    if (!args[0]) {
-      return conn.reply(m.chat,
-        `> ⓘ USO INCORRECTO
+    const { formats } = await getFacebookDownloadInfo(targetUrl)
 
-> ❌ Debes proporcionar un enlace de Facebook
-
-> 📝 Ejemplos:
-> • ${usedPrefix + command} https://fb.watch/xxxxx
-> • ${usedPrefix}fb https://facebook.com/xxxxx
-
-> 💡 Comandos:
-> • ${usedPrefix}fb <url> - Descargar video
-> • ${usedPrefix}fbaudio <url> - Extraer audio`, m)
+    const directFormats = formats.filter((item) => item?.url && !item.requiresRender)
+    if (!directFormats.length) {
+      await m.react('❌')
+      return conn.reply(m.chat, '> ⓘ \`No se encontraron enlaces directos para descargar\`', m)
     }
 
-    const url = args[0]
-    if (!url.match(/facebook\.com|fb\.watch/)) {
-      return conn.reply(m.chat,
-        `> ⓘ ENLACE INVALIDO
+    const chosen = chooseDownloadable(directFormats)
 
-> ❌ URL no válida
-
-> 💡 Ejemplo correcto:
-> https://fb.watch/xxxxx
-> https://facebook.com/xxxxx`, m)
-    }
-
-    await conn.sendMessage(m.chat, { react: { text: '🔍', key: m.key } })
-
-    const apiUrl = `https://mayapi.ooguy.com/facebook?url=${encodeURIComponent(url)}&apikey=may-f53d1d49`
-    const response = await fetch(apiUrl, {
-      timeout: 30000
-    })
-
-    if (!response.ok) {
-      throw new Error(`Error en la API: ${response.status}`)
-    }
-
-    const data = await response.json()
-
-    if (!data.status) {
-      throw new Error('La API no respondió correctamente')
-    }
-
-    let videoUrl, videoTitle
-
-    if (data.result && data.result.url) {
-      videoUrl = data.result.url
-      videoTitle = data.result.title || 'Video de Facebook'
-    } else if (data.url) {
-      videoUrl = data.url
-      videoTitle = data.title || 'Video de Facebook'
-    } else if (data.data && data.data.url) {
-      videoUrl = data.data.url
-      videoTitle = data.data.title || 'Video de Facebook'
+    // Si el comando es fbaudio, enviar solo audio
+    if (command === 'fbaudio') {
+      await conn.sendMessage(
+        m.chat,
+        {
+          audio: { url: chosen.url },
+          mimetype: 'audio/mpeg',
+          fileName: 'facebook_audio.mp3',
+          ptt: false
+        },
+        { quoted: m }
+      )
     } else {
-      throw new Error('No se encontró URL del video')
+      // Comando fb - enviar video
+      await conn.sendMessage(
+        m.chat,
+        {
+          video: { url: chosen.url },
+          caption: `> ⓘ \`Facebook Downloader\`\n> ⓘ \`Calidad:\` *${chosen.quality || chosen.label}*`
+        },
+        { quoted: m }
+      )
     }
 
-    const isAudioCommand = command.toLowerCase().includes('audio')
-
-    if (isAudioCommand) {
-      await conn.sendMessage(m.chat, {
-        audio: { url: videoUrl },
-        mimetype: 'audio/mpeg',
-        fileName: `audio_facebook.mp3`
-      }, { quoted: m })
-    } else {
-      await conn.sendMessage(m.chat, {
-        video: { url: videoUrl },
-        caption: `> ⓘ VIDEO DESCARGADO
-
-> 📹 ${videoTitle}
-> 🎬 Formato: MP4
-> 🎁 Calidad: Original`
-      }, { quoted: m })
-    }
-
-    await conn.sendMessage(m.chat, { react: { text: '✅', key: m.key } })
-
+    await m.react('✅')
   } catch (error) {
-    console.error('Error en descarga Facebook:', error)
-
-    await conn.reply(m.chat,
-      `> ⓘ ERROR
-
-> ❌ ${error.message}
-
-> 💡 Verifica el enlace o intenta más tarde`, m)
-
-    await conn.sendMessage(m.chat, { react: { text: '❌', key: m.key } })
+    await m.react('❌')
+    return conn.reply(m.chat, `> ⓘ \`Error:\` *${error.message}*`, m)
   }
 }
 
 handler.help = ['fb', 'fbaudio']
 handler.tags = ['downloader']
-handler.command = ['fb','fbaudio']
-handler.register = false
+handler.command = ['fb', 'fbaudio']
 
 export default handler
