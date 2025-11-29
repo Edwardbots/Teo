@@ -48,9 +48,6 @@ let handler = async (m, { conn, args, usedPrefix }) => {
   try {
     const song = await searchSong(query);
 
-    const details = `> *Título*: ${song.title}\n> *Artista*: ${song.artist}\n> Duración: ${song.duration || 'Desconocida'}\n> *Link*: ${song.url}`;
-    await conn.reply(m.chat, details, m);
-
     const tmpDir = path.join(".", "tmp");
     if (!fs.existsSync(tmpDir)) fs.mkdirSync(tmpDir, { recursive: true });
 
@@ -70,7 +67,7 @@ let handler = async (m, { conn, args, usedPrefix }) => {
   }
 };
 
-handler.help = ["song"];
+
 handler.tags = ["downloader"];
 handler.command = ["song"];
 
