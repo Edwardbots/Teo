@@ -1,12 +1,8 @@
 let handler = async (m, { conn, usedPrefix }) => {
-  const ctxErr = global.rcanalx || { contextInfo: { externalAdReply: { title: '❌ Error', body: 'Itsuki Nakano IA', thumbnailUrl: 'https://qu.ax/QGAVS.jpg', sourceUrl: global.canalOficial || '' }}}
-  const ctxWarn = global.rcanalw || { contextInfo: { externalAdReply: { title: '⚠️ Advertencia', body: 'Itsuki Nakano IA', thumbnailUrl: 'https://qu.ax/QGAVS.jpg', sourceUrl: global.canalOficial || '' }}}
-  const ctxOk = global.rcanalr || { contextInfo: { externalAdReply: { title: '✅ Balance', body: 'Itsuki Nakano IA', thumbnailUrl: 'https://qu.ax/QGAVS.jpg', sourceUrl: global.canalOficial || '' }}}
-
   const currency = global.currency || 'Yenes'
 
   if (!global.db.data.chats[m.chat].economy && m.isGroup) {
-    return conn.reply(m.chat, '> \\`🚫 ECONOMIA DESACTIVADA\\`\n\n> \\`❌ Los comandos de economía están desactivados en este grupo\\`\n\n> \\`📝 Administrador activa con:\\`\n> \\`' + usedPrefix + 'economy on\\`\n\n> \\`📚 "No puedo revisar tu balance si la economía está desactivada..."\\`', m, ctxErr)
+    return conn.reply(m.chat, '> \\`🚫 ECONOMIA DESACTIVADA\\`\n\n> \\`❌ Los comandos de economía están desactivados en este grupo\\`\n\n> \\`📝 Administrador activa con:\\`\n> \\`' + usedPrefix + 'economy on\\`\n\n> \\`📚 "No puedo revisar tu balance si la economía está desactivada..."\\`', m)
   }
 
   let mentionedJid = await m.mentionedJid
@@ -21,7 +17,7 @@ let handler = async (m, { conn, usedPrefix }) => {
   })())()
 
   if (!(who in global.db.data.users)) {
-    return conn.reply(m.chat, '> \\`❌ USUARIO NO ENCONTRADO\\`\n\n> \\`🍙 Este usuario no está registrado en mi base de datos\\`\n\n> \\`📚 "Debe usar el bot primero para registrarse..."\\`', m, ctxErr)
+    return conn.reply(m.chat, '> \\`❌ USUARIO NO ENCONTRADO\\`\n\n> \\`🍙 Este usuario no está registrado en mi base de datos\\`\n\n> \\`📚 "Debe usar el bot primero para registrarse..."\\`', m)
   }
 
   let user = global.db.data.users[who]
@@ -41,7 +37,7 @@ let handler = async (m, { conn, usedPrefix }) => {
                 '> \\`📚 "Para proteger tu dinero, ¡deposítalo en el banco!"\\`\n\n' +
                 '> \\`📝 Usa:\\` *' + usedPrefix + 'deposit <cantidad>*'
 
-  await conn.reply(m.chat, texto, m, ctxOk)
+  await conn.reply(m.chat, texto, m)
 }
 
 handler.help = ['bal']
