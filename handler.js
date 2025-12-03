@@ -35,10 +35,6 @@ if (typeof global.__dirname !== 'function') {
 
 const CURRENT_DIR = path.dirname(fileURLToPath(import.meta.url));
 
-// === DEFINIR OWNER GLOBAL ===
-global.owner = ['573187418668@s.whatsapp.net'];
-global.roowner = ['573187418668'];
-
 const { proto } = (await import("@whiskeysockets/baileys")).default
 const isNumber = x => typeof x === "number" && !isNaN(x)
 const delay = ms => isNumber(ms) && new Promise(resolve => setTimeout(function () {
@@ -705,8 +701,8 @@ export async function handler(chatUpdate) {
         if (!("nsfw" in chat)) chat.nsfw = false
         if (!("economy" in chat)) chat.economy = true;
         if (!("gacha" in chat)) chat.gacha = true
-        // === AÑADIR ROOTOWNER ===
-        if (!("rootowner" in chat)) chat.rootowner = false
+        // === ROOTOWNER ELIMINADO ===
+        // No hay variable rootowner aquí
       } else global.db.data.chats[m.chat] = {
         isBanned: false,
         isMute: false,
@@ -721,9 +717,9 @@ export async function handler(chatUpdate) {
         antiArabeRegistros: [],
         nsfw: false,
         economy: true,
-        gacha: true,
-        // === AÑADIR ROOTOWNER ===
-        rootowner: false
+        gacha: true
+        // === ROOTOWNER ELIMINADO ===
+        // No hay rootowner: false aquí
       }
 
       const settings = global.db.data.settings[this.user.jid]
@@ -753,35 +749,8 @@ export async function handler(chatUpdate) {
     const chat = global.db.data.chats[m.chat]
     const settings = global.db.data.settings[this.user.jid]
 
-    // === CORRECCIÓN CRÍTICA: DEFINIR isROwner ANTES DE USARLO ===
-    const ownerNumbers = global.owner || global.roowner || []
-    
-    // FORMA SIMPLE Y EFECTIVA de verificar si es owner
-    let isROwner = false
-    if (Array.isArray(ownerNumbers)) {
-      for (const owner of ownerNumbers) {
-        if (typeof owner === 'string') {
-          // Convertir a formato JID si es necesario
-          let ownerJid = owner
-          if (!owner.includes('@s.whatsapp.net')) {
-            ownerJid = owner.replace(/[^0-9]/g, "") + "@s.whatsapp.net"
-          }
-          if (ownerJid === m.sender) {
-            isROwner = true
-            break
-          }
-        }
-      }
-    }
-
-    const isOwner = isROwner || m.fromMe
-
-    // === SISTEMA ROOTOWNER - VERIFICACIÓN ===
-    // Esta es la parte que debe funcionar
-    if (chat?.rootowner && !isROwner) {
-      console.log(`🚫 RootOwner activado: Ignorando mensaje de ${m.sender}`)
-      return // Ignorar completamente el mensaje
-    }
+    // === ROOTOWNER ELIMINADO - Solo definición básica ===
+    const isOwner = m.fromMe
 
     // === CONTINÚA CON EL RESTO DEL CÓDIGO ===
     if (m.message && m.key.remoteJid.endsWith('@g.us') && chat?.antiArabe) {
@@ -796,24 +765,10 @@ export async function handler(chatUpdate) {
       }
     }
 
-    // === CORRECCIÓN DE isPrems ===
-    const premNumbers = global.prems || []
-    const isPrems = isROwner || (Array.isArray(premNumbers) 
-      ? premNumbers.some(prem => {
-          if (typeof prem === 'string') {
-            const cleanPrem = prem.replace(/[^0-9]/g, "") + "@s.whatsapp.net"
-            return cleanPrem === m.sender
-          }
-          return false
-        })
-      : false) || user.premium == true
+    // Definir isPrems de forma básica
+    const isPrems = user.premium == true || m.fromMe
 
-    const isOwners = [this.user.jid, ...(ownerNumbers || []).map(owner => {
-      if (typeof owner === 'string') {
-        return owner.replace(/[^0-9]/g, "") + "@s.whatsapp.net"
-      }
-      return ''
-    })].includes(m.sender)
+    const isOwners = [this.user.jid].includes(m.sender)
 
     if (opts && opts["queque"] && m.text && !(isPrems)) {
       const queque = this.msgqueque, time = 1000 * 5
@@ -894,8 +849,7 @@ export async function handler(chatUpdate) {
           groupMetadata,
           userGroup,
           botGroup,
-          isROwner,
-          isOwner,
+          isOwner: m.fromMe,
           isRAdmin,
           isAdmin,
           isBotAdmin,
@@ -945,7 +899,6 @@ export async function handler(chatUpdate) {
           } else {
             global.db.data.chats[m.chat].primaryBot = null
           }
-        } else {
         }
 
         if (!isAccept) continue
@@ -959,7 +912,7 @@ export async function handler(chatUpdate) {
           const botId = this.user.jid
           const primaryBotId = chat.primaryBot
 
-          if (name !== "group-banchat.js" && chat?.isBanned && !isROwner) {
+          if (name !== "group-banchat.js" && chat?.isBanned && !m.fromMe) {
             if (!primaryBotId || primaryBotId === botId) {
               const aviso = `El bot *${global.botname || 'Bot'}* está desactivado en este grupo\n\n> ✦ Un *administrador* puede activarlo con el comando:\n> » *${usedPrefix}bot on*`.trim()
               await m.reply(aviso)
@@ -967,7 +920,7 @@ export async function handler(chatUpdate) {
             }
           }
 
-          if (m.text && user.banned && !isROwner) {
+          if (m.text && user.banned && !m.fromMe) {
             const mensaje = `Estas baneado/a, no puedes usar comandos en este bot!\n\n> ● *Razón ›* ${user.bannedReason}\n\n> ● Si este Bot es cuenta oficial y tienes evidencia que respalde que este mensaje es un error, puedes exponer tu caso con un moderador.`.trim()
             if (!primaryBotId || primaryBotId === botId) {
               m.reply(mensaje)
@@ -981,19 +934,19 @@ export async function handler(chatUpdate) {
         const adminMode = chat.modoadmin || false
         const wa = plugin.botAdmin || plugin.admin || plugin.group || plugin || noPrefix || pluginPrefix || m.text.slice(0, 1) === pluginPrefix || plugin.command
 
-        if (adminMode && !isOwner && m.isGroup && !isAdmin && wa) return
+        if (adminMode && !m.fromMe && m.isGroup && !isAdmin && wa) return
 
-        if (plugin.rowner && plugin.owner && !(isROwner || isOwner)) {
+        if (plugin.rowner && plugin.owner && !m.fromMe) {
           fail("owner", m, this)
           continue
         }
 
-        if (plugin.rowner && !isROwner) {
+        if (plugin.rowner && !m.fromMe) {
           fail("rowner", m, this)
           continue
         }
 
-        if (plugin.owner && !isOwner) {
+        if (plugin.owner && !m.fromMe) {
           fail("owner", m, this)
           continue
         }
@@ -1040,8 +993,7 @@ export async function handler(chatUpdate) {
           groupMetadata,
           userGroup,
           botGroup,
-          isROwner,
-          isOwner,
+          isOwner: m.fromMe,
           isRAdmin,
           isAdmin,
           isBotAdmin,
