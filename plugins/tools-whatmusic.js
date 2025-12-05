@@ -55,7 +55,5 @@ let handler = async (m, { usedPrefix, command, conn, text }) => {
 handler.help = ['whatmusic']
 handler.tags = ['tools']
 handler.command = /^(whatmusic)$/i
-handler.limit = true
-handler.register = true
 
 export default handler
