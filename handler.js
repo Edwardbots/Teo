@@ -484,6 +484,51 @@ settings
 } catch (err) {
 console.error(err)
 }}
+
+// --- BLOQUE ANTERIOR (INCORRECTO) ---
+// if (typeof plugin.before === "function") {
+// if (await plugin.before.call(this, m, {
+// match,
+// prefixMatch,
+// conn: this,
+// participants,
+// groupMetadata,
+// userGroup,
+// botGroup,
+// isROwner,
+// isOwner,
+// isRAdmin,
+// isAdmin,
+// isBotAdmin,
+// isPrems,
+// chatUpdate,
+// __dirname: ___dirname,
+// __filename,
+// user,
+// chat,
+// settings
+// }))
+// continue
+// }
+
+// --- NUEVO BLOQUE CORREGIDO PARA 'before' ---
+if (typeof plugin.before === "function") {
+    try {
+        // Ejecutamos la función 'before' del plugin SIN detener el flujo
+        await plugin.before.call(this, m, {
+            conn: this,
+            participants,
+            groupMetadata,
+            user,
+            chat,
+            settings
+        });
+    } catch (err) {
+        console.error(`[PLUGIN BEFORE] Error en el plugin ${name}:`, err);
+    }
+}
+// --- FIN DEL BLOQUE CORREGIDO ---
+
 if (!opts["restrict"])
 if (plugin.tags && plugin.tags.includes("admin")) {
 continue
