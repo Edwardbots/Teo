@@ -149,13 +149,7 @@ function getCountryName(code) {
         'ucrania': 'Ucrania 🇺🇦',
         'rumania': 'Rumania 🇷🇴',
         'polonia': 'Polonia 🇵🇱',
-        'mexico': 'México 🇲🇽',
         'brasil': 'Brasil 🇧🇷',
-        'argentina': 'Argentina 🇦🇷',
-        'colombia': 'Colombia 🇨🇴',
-        'peru': 'Perú 🇵🇪',
-        'chile': 'Chile 🇨🇱',
-        'venezuela': 'Venezuela 🇻🇪',
         'local': 'Local 🌍'
     }
     return countryNames[code] || code
