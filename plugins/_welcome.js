@@ -86,4 +86,4 @@ let handler = async (m, { conn, participants }) => {
 handler.group = true;
 
 // No necesita un comando, se activa por un evento
-export default handler;
+export default handler
