@@ -103,18 +103,6 @@ npm start
 * 𝐂𝐨𝐦𝐮𝐧𝐢𝐝𝐚𝐝 𝐎𝐟𝐢𝐜𝐢𝐚𝐥 [`¡Click aquí!`](https://chat.whatsapp.com/DWnpVoJgxe25H9nXNCcfCn)
 </details>
 
-### **`✦ 𝗤𝘂𝗶𝗻𝘁𝗶𝗹𝗹𝗶𝘀𝗮𝘀-𝗛𝗼𝘀𝘁 ✦`**
-
-<a
-href="https://dash.quintillisas.com"><img src="https://cdn.russellxz.click/2cd46ea4.jpg" height="125px"></a>
-
-<details>
-<summary><b>Տᗴᖇᐯᗴᖇ ᗪᗴ ᗩᒪOᒍᗩᗰIᗴᑎTO ᗪᗴᒪ ᗷOT 💻</b></summary>
-
-* 𝐃𝐚𝐬𝐡𝐛𝐨𝐚𝐫𝐝 : [`Dash`](https://dash.quintillisas.com)
-* 𝐏𝐚𝐧𝐞𝐥 𝐆𝐞𝐬𝐭𝐢𝐨𝐧 : [`Panel`](https://panel.quintillisas.com)
-</details>
-
 ### **`✦ 𝗦𝗸𝘆𝗨𝗹𝘁𝗿𝗮𝗣𝗹𝘂𝘀 ✦`**
 
 <a
