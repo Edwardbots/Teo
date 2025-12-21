@@ -25,39 +25,36 @@ handler.before = async (m, { conn }) => {
   const text = m.text || m.caption
   if (!text) return
 
-  const linkRegex = /(https?:\/\/|www\.|wa\.me\/|chat\.whatsapp\.com\/|t\.me\/|instagram\.com\/|facebook\.com\/|youtube\.com\/|youtu\.be\/|x\.com\/|twitter\.com\/|discord\.gg\/|tiktok\.com\/|bit\.ly\/|tinyurl\.com\/|[a-zA-Z0-9-]+\.[a-zA-Z]{2,})/i
+  // 🔒 DETECTA CUALQUIER LINK
+  const linkRegex = /((https?:\/\/)|(www\.))\S+|[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(\/\S*)?/i
   if (!linkRegex.test(text)) return
-
-  // 🕐 proceso iniciado
-  await m.react('🕐')
 
   const metadata = await conn.groupMetadata(m.chat)
   const participants = metadata.participants
 
   const isUserAdmin = participants.some(p => p.id === m.sender && p.admin)
-  const botId = conn.user.id.split(':')[0] + '@s.whatsapp.net'
-  const isBotAdmin = participants.some(p => p.id === botId && p.admin)
+  const isBotAdmin = participants.some(p => p.id === conn.user.id && p.admin)
 
   if (isUserAdmin || !isBotAdmin) return
 
   try {
-    // 🧹 borrar mensaje
-    await conn.sendMessage(m.chat, {
-      delete: {
-        remoteJid: m.chat,
-        fromMe: false,
-        id: m.key.id,
-        participant: m.sender
-      }
-    })
+    // 🕐 detectado
+    await m.react('🕐')
+
+    // 🧹 aviso de limpieza
     await m.react('🧹')
 
-    // ❌ expulsar usuario
+    // ❌ aviso de expulsión
+    await m.react('⛔️')
+
+    // 💥 borrar mensaje
+    await conn.sendMessage(m.chat, { delete: m.key })
+
+    // 🚪 expulsar usuario
     await conn.groupParticipantsUpdate(m.chat, [m.sender], 'remove')
-    await m.react('✅️')
 
   } catch (e) {
-    console.error(e)
+    console.error('[ANTILINK]', e)
   }
 }
 
